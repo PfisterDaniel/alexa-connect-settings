@@ -24,6 +24,6 @@ mongo mongodb://localhost/admin --authenticationDatabase admin -u '<mongo-admin-
         pwd: "<mqtt-password>",
         roles: [{
             role: "read",
-            db: "admin"
+            db: "users"
         }]
     })'
