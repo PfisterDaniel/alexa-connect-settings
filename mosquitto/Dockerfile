@@ -11,7 +11,7 @@ RUN apk --no-cache --virtual build-deps add   \
     && cd /usr/local/src \
     && wget https://mosquitto.org/files/source/mosquitto-1.6.9.tar.gz \
     && tar xvzf ./mosquitto-1.6.9.tar.gz \
-    && cd mosquitto-1.6.8 \
+    && cd mosquitto-1.6.9 \
     && make -j "$(nproc)" \
        CFLAGS="-Wall -O2 -flto"  \
        WITH_SRV=yes \
