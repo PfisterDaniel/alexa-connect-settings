@@ -31,7 +31,7 @@ RUN apk --no-cache --virtual build-deps add   \
     && install -m644 /usr/local/src/mosquitto-1.6.9/mosquitto.conf /mosquitto/config/mosquitto.conf \
     && chown -R mosquitto:mosquitto /mosquitto \
     && cd /usr/local/src \
-    && wget hhttps://github.com/mongodb/mongo-c-driver/releases/download/1.17.2/mongo-c-driver-1.17.2.tar.gz \
+    && wget https://github.com/mongodb/mongo-c-driver/releases/download/1.17.2/mongo-c-driver-1.17.2.tar.gz \
     && tar zxf ./mongo-c-driver-1.17.2.tar.gz \
     && cd /usr/local/src/mongo-c-driver-1.17.2/ \
     && mkdir -p build \
