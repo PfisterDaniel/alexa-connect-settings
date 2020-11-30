@@ -11,7 +11,7 @@ var mongo_user = (process.env.MONGO_USER);
 var mongo_password = (process.env.MONGO_PASSWORD);
 var mongo_host = (process.env.MONGO_HOST || "mongodb");
 var mongo_port = (process.env.MONGO_PORT || "27017");
-mongo_url = "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/admin";
+mongo_url = "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/users";
 mongoose.Promise = global.Promise;
 var mongoose_connection = mongoose.connection;
 ///////////////////////////////////////////////////////////////////////////
@@ -45,7 +45,7 @@ mongoose.set('useFindAndModify', false);
 // Move back to useUnifiedTopology: false
 mongoose.set('useUnifiedTopology', true);
 
-logger.log('info', "[Core] Connecting to MongoDB server: mongodb://" + mongo_host + ":" + mongo_port + "/admin");
+logger.log('info', "[Core] Connecting to MongoDB server: mongodb://" + mongo_host + ":" + mongo_port + "/users");
 
 exports.connect = () => {
 	mongoose.connect(mongo_url, {
