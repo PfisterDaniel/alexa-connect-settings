@@ -242,12 +242,12 @@ async (req, res) => {
 // Functions
 ///////////////////////////////////////////////////////////////////////////
 function ensureAuthenticated(req,res,next) {
-	//if (req.isAuthenticated()) {
+	if (req.isAuthenticated()) {
     	return next();
-	/*} else {
+	} else {
 		logger.log('error', "Authenticated: "+ req.isAuthenticated());
 		res.redirect('/login');
-	}*/
+	}
 }
 // Disable/ enable user
 const toggleUser = async(id, enabled) => {
