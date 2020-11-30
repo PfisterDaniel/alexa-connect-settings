@@ -7,8 +7,8 @@ mongo -- users<<EOF
     db.createCollection("users");
     db.createCollection("sessions");
     db.createUser({user: '<mqtt-user>', pwd: '<mqtt-password>', roles: [{role: "read", db: "users"}]});
-    db.createUser({user: '<web-app-user>', pwd: '<web-app-user>', roles: [{role: "dbOwner", db: "sessions"}]});
-    db.createUser({user: '<web-app-user>', pwd: '<web-app-user>', roles: [{role: "readWrite", db: "users"}]});
+    db.createUser({user: '<web-app-user>', pwd: '<web-app-password>', roles: [{role: "dbOwner", db: "sessions"}]});
+    db.createUser({user: '<web-app-user>', pwd: '<web-app-password>', roles: [{role: "readWrite", db: "users"}]});
 EOF
 
 #mongo mongodb://localhost/users --authenticationDatabase admin -u '<mongo-admin-user>' -p '<mongo-admin-password>' --eval '
