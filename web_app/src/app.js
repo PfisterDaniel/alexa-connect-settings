@@ -259,7 +259,7 @@ const createServer = async() => {
 			// 	saveUninitialized: false,
 			// 	secret: cookieSecret
 			// }));
-
+			logger.log('info', "[App] Development environment detected disable trust proxy/ secure cookies");
 			app.use(cookieSession({
 				name: 'session',
 				keys: [cookieSecret],
