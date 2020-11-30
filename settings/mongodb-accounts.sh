@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set - eu
 
-mongo -- mqGate<<EOF
+mongo -- users<<EOF
     var admin = db.getSiblingDB('admin');
     admin.auth('<mongo-admin-user>', '<mongo-admin-password>');
     db.createCollection("users");
