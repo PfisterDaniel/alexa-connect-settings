@@ -91,11 +91,16 @@ const authenticate = Account.authenticate();
 passport.use(new LocalStrategy((username, password, cb) => {
   authenticate(username, password, (err, user, error) => {
 	logger.log('debug',"[Auth] Passport Local Strategy, authentication called for user: " + username);
+	logger.log('debug',"[Auth] User: " + username);
+	logger.log('debug',"[Auth] Password: " + password);
+	logger.log('debug',"[Auth] Error: " + err);
+	
 	// An error ocurred, do not authenticate
 	if (err) { return cb(err); }
 	// Check user is active, if not send customised error
 	//if (user && user.active == false ) {return cb(null, false, new Error("User account disabled!"))};
-
+	logger.log('debug',"[Auth] Activ: " + user.active);
+	logger.log('debug',"[Auth] Verified: " + user.isVerified);
 	// Check user is active and verified, if not send customised error depending on scenario
 	if (user && (!user.active || !user.isVerifed)) {
 		if (!user.active) return cb(null, false, new Error("User account disabled!"));
