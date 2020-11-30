@@ -242,7 +242,7 @@ async (req, res) => {
 // Functions
 ///////////////////////////////////////////////////////////////////////////
 function ensureAuthenticated(req,res,next) {
-	logger.log('error', "ensureAuthenticated: " + next + "->" + req + "->" + res);
+	logger.log('error', "ensureAuthenticated: " + next + "->" + JSON.stringify(req) + "->" + JSON.stringify(res));
 	if (req.isAuthenticated()) {
     	return next();
 	} else {
