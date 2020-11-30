@@ -19,6 +19,7 @@ const path = require('path');
 const { SitemapStream, streamToPromise } = require('sitemap');
 const { createGzip } = require('zlib');
 const robots = require('express-robots-txt');
+
 ///////////////////////////////////////////////////////////////////////////
 // Loaders/ Services
 ///////////////////////////////////////////////////////////////////////////
@@ -50,6 +51,8 @@ var mqtt_password = (process.env.MQTT_PASSWORD);
 var cookieSecret = (process.env.COOKIE_SECRET || 'ihytsrf334');
 if (cookieSecret == 'ihytsrf334') {logger.log("warn", "[App] Using default Cookie Secret, please supply new secret using COOKIE_SECRET environment variable")}
 else {logger.log("info", "[App] Using user-defined cookie secret")}
+
+var environment = (process.env.ENVIRONMENT || 'dev');
 ///////////////////////////////////////////////////////////////////////////
 // Main
 ///////////////////////////////////////////////////////////////////////////
@@ -214,6 +217,11 @@ const createServer = async() => {
 		app.use(morgan("combined", {stream: logger.stream})); // change to use Winston
 		// Enable req.flash support
 		app.use(flash());
+		if(environment === 'prod'){
+			app.set('env', 'production');
+		}else{
+			app.set('env', 'development');
+		}
 		// Handle production environment session handler options
 		if (app.get('env') === 'production') {
 			logger.log('info', "[App] Production environment detected enabling trust proxy/ secure cookies");
