@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set - eu
 
-mongo -- users<<EOF
+mongo -- admin<<EOF
     var admin = db.getSiblingDB('admin');
     admin.auth('<mongo-admin-user>', '<mongo-admin-password>');
 
@@ -9,7 +9,6 @@ mongo -- users<<EOF
     var user = '<mqtt-user>';
     var passwd = '<mqtt-password>';
     db.createUser({user: user, pwd: passwd, roles: [{role: "read", db: mqDB}]});
-    db.createCollection("users");
 EOF
 #mongo mongodb://localhost/users --authenticationDatabase admin -u '<mongo-admin-user>' -p '<mongo-admin-password>' --eval '
 #    db.createUser({
