@@ -16,7 +16,7 @@ if (process.env.GOOGLE_ANALYTICS_TID != undefined) {
 module.exports.sendPageView = function sendPageView(requestPath, friendlyName, userIp, userAgent){
     var view = {
 		dp: requestPath,
-		dh: 'https://' + process.env.WEB_HOSTNAME,
+		dh: 'https://' + process.env.WEB_HOSTNAME + ":3000",
 		dt: friendlyName,
 		uip: userIp,
 		ua: userAgent
@@ -28,7 +28,7 @@ module.exports.sendPageView = function sendPageView(requestPath, friendlyName, u
 module.exports.sendPageViewUid = function sendPageViewUid(requestPath, friendlyName, userIp, userId, userAgent){
     var view = {
 		dp: requestPath,
-		dh: 'https://' + process.env.WEB_HOSTNAME,
+		dh: 'https://' + process.env.WEB_HOSTNAME + ":3000",
 		dt: friendlyName,
         uip: userIp,
         uid: userId,
