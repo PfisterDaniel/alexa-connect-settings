@@ -115,7 +115,6 @@ router.get('/logout', defaultLimiter, function(req,res){
 router.post('/login', defaultLimiter,
 	passport.authenticate('local',{ failureRedirect: '/login', failureFlash: true, session: true }),
 	function(req,res){
-		logger.log('info', "[Core] Auth: " + req.user.username + " - " + JSON.stringify(req) + " - " + JSON.stringify(res));
 		sendPageViewUid(req.path, 'Login', req.ip, req.user.username, req.headers['user-agent']);
 		if (req.query.next) {
 			res.reconnect(req.query.next);
