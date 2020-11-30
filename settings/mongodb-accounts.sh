@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -eu
-mongo -- users<<EOF
+mongo -- admin<<EOF
     var admin = db.getSiblingDB('admin');
     admin.auth('<mongo-admin-user>', '<mongo-admin-password>');
-    db.createUser({user: "<mqtt-user>", pwd: "<mqtt-password>", roles: [{role: "read", db: "users"}]});
+    db.createUser({user: "<mqtt-user>", pwd: "<mqtt-password>", roles: [{role: "read", db: "admin"}]});
 EOF
 
 #mongo mongodb://localhost/users --authenticationDatabase admin -u '<mongo-admin-user>' -p '<mongo-admin-password>' --eval '
