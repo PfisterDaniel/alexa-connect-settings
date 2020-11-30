@@ -18,7 +18,7 @@ mongo mongodb://localhost/sessions --authenticationDatabase admin -u '<mongo-adm
         }]
     })'
     
-mongo mongodb://localhost/users --authenticationDatabase admin -u '<mongo-admin-user>' -p '<mongo-admin-password>' --eval '
+mongo mongodb://localhost/admin --authenticationDatabase admin -u '<mongo-admin-user>' -p '<mongo-admin-password>' --eval '
     db.createUser({
         user: "<mqtt-user>",
         pwd: "<mqtt-password>",
