@@ -1,5 +1,25 @@
 #!/usr/bin/env bash
-set - eu
+set -eu
+
+mongo -- users<<EOF
+    var admin = db.getSiblingDB('admin');
+    admin.auth('<mongo-admin-user>', '<mongo-admin-password>');
+
+    var mqDB = 'users'
+    var user = '<web-app-user>';
+    var passwd = '<web-app-password>';
+    db.createUser({user: user, pwd: passwd, roles: [{role: "readWrite", db: mqDB}]});
+EOF
+
+mongo -- sessions<<EOF
+    var admin = db.getSiblingDB('admin');
+    admin.auth('<mongo-admin-user>', '<mongo-admin-password>');
+
+    var mqDB = 'sessions'
+    var user = '<web-app-user>';
+    var passwd = '<web-app-password>';
+    db.createUser({user: user, pwd: passwd, roles: [{role: "dbOwner", db: mqDB}]});
+EOF
 
 mongo -- admin<<EOF
     var admin = db.getSiblingDB('admin');
@@ -10,6 +30,7 @@ mongo -- admin<<EOF
     var passwd = '<mqtt-password>';
     db.createUser({user: user, pwd: passwd, roles: [{role: "read", db: mqDB}]});
 EOF
+
 #mongo mongodb://localhost/users --authenticationDatabase admin -u '<mongo-admin-user>' -p '<mongo-admin-password>' --eval '
 #    db.createUser({
 #        user: "<web-app-user>",
