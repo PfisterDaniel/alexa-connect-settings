@@ -245,6 +245,7 @@ function ensureAuthenticated(req,res,next) {
 	if (req.isAuthenticated()) {
     	return next();
 	} else {
+		logger.log('error', "Authenticated: "+ req.isAuthenticated());
 		res.redirect('/login');
 	}
 }
