@@ -1,6 +1,6 @@
 FROM node:12.18
 
-ENV NODE_ENV production
+ENV NODE_ENV <Environment-Variable>
 
 WORKDIR /usr/src/app
 COPY package*.json ./
