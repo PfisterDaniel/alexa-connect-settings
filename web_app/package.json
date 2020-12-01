@@ -1,6 +1,6 @@
 {
-  "name": "node-red-alexa-home-skill-v3",
-  "version": "0.11.0",
+  "name": "alex-connect-web-app",
+  "version": "0.1.0",
   "description": "",
   "main": "src/app.js",
   "scripts": {
@@ -9,19 +9,17 @@
   },
   "keywords": [
     "alexa",
-    "smart",
-    "home",
-    "google"
+    "smart"
   ],
   "bugs": {
-    "url": "https://github.com/coldfire84/node-red-alexa-home-skill-v3-web/issues"
+    "url": "https://github.com/PfisterDaniel/alexa-connect/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/coldfire84/node-red-alexa-home-skill-v3-web"
+    "url": "https://github.com/PfisterDaniel/alexa-connect"
   },
-  "homepage": "https://red.cb-net.co.uk/",
-  "author": "chrismbradford@gmail.com",
+  "homepage": "https://service.alexa-connect.de/",
+  "author": "Daniel Pfister",
   "license": "Apache-2.0",
   "dependencies": {
     "axios" : "^0.19.2",
