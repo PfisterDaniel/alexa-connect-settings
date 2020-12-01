@@ -36,7 +36,7 @@ router.get('/services', defaultLimiter,
 		}
 		catch(e){
 			logger.log('error' , "[Admin Services] Error rendering page, error: " + e.stack);
-			res.status(500).send('Error rendering page!');
+			res.status(500).send('Fehler beim Rendern der Seite!');
 		}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ router.get('/users', defaultLimiter,
 		}
 		catch(e){
 			logger.log('error', "[Admin Users] Error rendering page, error: " + e.stack);
-			res.status(500).send('Error rendering page!');
+			res.status(500).send('Fehler beim Rendern der Seite!');
 		}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ router.post('/toggle-topics/:username', defaultLimiter,
 		try{
 			// Check req.user is super user
 			if (req.user.superuser === true) {
-				if (!req.params.username) return res.status(400).send('Username not supplied!');
+				if (!req.params.username) return res.status(400).send('Benutzername nicht angegeben!');
 				// Get user-specific ACL
 				let aclUser = await Topics.findOne({topics:	['command/' + req.params.username + '/#','state/' + req.params.username + '/#','response/' + req.params.username + '/#','message/' + req.params.username + '/#']});
 				if (!aclUser) {
@@ -113,7 +113,7 @@ router.post('/toggle-topics/:username', defaultLimiter,
 		// Error handler
 		catch(e){
 			logger.log('error', "[Reset Topics] Failed to reset topics for user, error: " + e.stack);
-			return res.status(500).send('Error!');
+			return res.status(500).send('Fehler!');
 		}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -128,10 +128,10 @@ router.post('/user/:id/:state', defaultLimiter,
 				let state = (req.params.state === "true");
 				let result = await toggleUser(req.params.id, state);
 				if (result == true) {
-					return res.status(200).send('Updated Account State!');
+					return res.status(200).send('Kontostatus aktualisiert!');
 				}
 				else {
-					return res.status(400).send("Error updating account state!");
+					return res.status(400).send("Fehler beim Aktualisieren des Kontostatus!");
 				}
 			}
 			else if (req.user.superuser !== true) {
@@ -143,7 +143,7 @@ router.post('/user/:id/:state', defaultLimiter,
 		}
 		catch(e){
 			logger.log('error', "[Admin Users] Error disabling/ enabling user, error: " + e.stack);
-			return res.status(400).send("Error updating account state!");
+			return res.status(400).send("Fehler beim Aktualisieren des Kontostatus!");
 		}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -164,7 +164,7 @@ router.get('/user-devices', defaultLimiter,
 		}
 		catch(e){
 			logger.log('error', "[Admin Devices] Error rendering page, error: " + e.stack);
-			res.status(500).send('Error rendering page!');
+			res.status(500).send('Fehler beim Rendern der Seite!');
 		}
 
 });
@@ -186,7 +186,7 @@ async (req, res) => {
 	}
 	catch(e){
 		logger.log('error', "[Admin Services] Error saving new service, error: " + e.stack);
-		res.status(500).send('Unable to save service!');
+		res.status(500).send('Service kann nicht gespeichert werden!');
 	}
 
 });
@@ -211,7 +211,7 @@ async (req, res) => {
 	}
 	catch(e) {
 		logger.log('error', "[Admin Services] Error editing service, error: " + e.stack);
-		res.status(500).send('Unable to modify service!');
+		res.status(500).send('Service kann nicht geändert werden!');
 	}
 
 });
@@ -231,7 +231,7 @@ async (req, res) => {
 	}
 	catch(e){
 		logger.log('error', "[Admin Services] Error deleting service, error: " + e.stack);
-		res.status(500).send('Unable to delete service!');
+		res.status(500).send('Service kann nicht gelöscht werden!');
 	}
 });
 ///////////////////////////////////////////////////////////////////////////

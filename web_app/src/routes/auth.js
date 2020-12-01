@@ -111,7 +111,7 @@ router.post('/finish',function(req,res,next) {
 				next();
 			} else if (!error){
 				logger.log('warn', "[Oauth2] User not authenticated");
-				req.flash('error', 'Your email or password was incorrect. Please try again.');
+				req.flash('error', 'Ihre E-Mail-Adresse oder Ihr Passwort war falsch. Bitte versuche es erneut.');
 				res.redirect(req.body['auth_url'])
 			}
 			else {

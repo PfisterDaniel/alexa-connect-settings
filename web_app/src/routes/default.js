@@ -40,40 +40,25 @@ router.get('/', defaultLimiter, async (req, res) => {
 	res.render('pages/index', {user: req.user, home: true, brand: process.env.BRAND, title: "Home | " + process.env.BRAND});
 });
 ///////////////////////////////////////////////////////////////////////////
-// Docs
-///////////////////////////////////////////////////////////////////////////
-router.get('/docs', defaultLimiter, async (req, res) => {
-	//outputSessionID(req, "/docs");
-	//res.render('pages/docs', {user: req.user, docs: true, brand: process.env.BRAND, title: "Documentation | " + process.env.BRAND});
-	res.status(301).redirect('https://docs.cb-net.co.uk');
-});
-///////////////////////////////////////////////////////////////////////////
 // About
 ///////////////////////////////////////////////////////////////////////////
 router.get('/about', defaultLimiter, async (req, res) => {
 	//outputSessionID(req, "/about");
-	res.render('pages/about', {user: req.user, about: true, brand: process.env.BRAND, title: "About | " + process.env.BRAND});
+	res.render('pages/about', {user: req.user, about: true, brand: process.env.BRAND, title: "Über | " + process.env.BRAND});
 });
 ///////////////////////////////////////////////////////////////////////////
 // Privacy
 ///////////////////////////////////////////////////////////////////////////
 router.get('/privacy', defaultLimiter, async (req, res) => {
 	//outputSessionID(req, "/privacy");
-	res.render('pages/privacy', {user: req.user, privacy: true, brand: process.env.BRAND, title: "Privacy Policy | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME});
-});
-///////////////////////////////////////////////////////////////////////////
-// TOS
-///////////////////////////////////////////////////////////////////////////
-router.get('/tos', defaultLimiter, async (req, res) => {
-	//outputSessionID(req, "/tos");
-	res.render('pages/tos', {user: req.user, tos: true, brand: process.env.BRAND, title: "Terms of Service | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME});
+	res.render('pages/privacy', {user: req.user, privacy: true, brand: process.env.BRAND, title: "Datenschutz | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME});
 });
 ///////////////////////////////////////////////////////////////////////////
 // Login (Get)
 ///////////////////////////////////////////////////////////////////////////
 router.get('/login', defaultLimiter, async (req, res) => {
 	//outputSessionID(req, "/login");
-	res.render('pages/login',{user: req.user, login: true, brand: process.env.BRAND, title: "Login | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME, message: req.flash('error')});
+	res.render('pages/login',{user: req.user, login: true, brand: process.env.BRAND, title: "Anmeldung | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME, message: req.flash('error')});
 });
 ///////////////////////////////////////////////////////////////////////////
 // Logout
@@ -111,7 +96,7 @@ router.post('/login', defaultLimiter,
 ///////////////////////////////////////////////////////////////////////////
 router.get('/new-user', defaultLimiter, async (req, res) => {
 	//outputSessionID(req, "/new-user");
-    res.render('pages/register',{user: req.user, newuser: true, brand: process.env.BRAND, title: "Register | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME});
+    res.render('pages/register',{user: req.user, newuser: true, brand: process.env.BRAND, title: "Registrierung | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME});
 });
 ///////////////////////////////////////////////////////////////////////////
 // Register/ Newuser (Post) restrictiveLimiter
@@ -121,11 +106,11 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 		var body = JSON.parse(JSON.stringify(req.body));
 		if (body.hasOwnProperty('username') && body.hasOwnProperty('email') && body.hasOwnProperty('country') && body.hasOwnProperty('password')) {
 			// Check password meets complexity requirements (for programmatic consumers)
-			if (passwordRegExp.test(req.body.password) == false) return res.status(400).send('Password does not meet complexity requirements!');
+			if (passwordRegExp.test(req.body.password) == false) return res.status(400).send('Passwort erfüllt nicht die Komplexitätsanforderungen!');
 			// Check email address format (for programmatic consumers)
-			if (emailRegExp.test(req.body.email) == false) return res.status(400).send('Email address format incorrect!');
+			if (emailRegExp.test(req.body.email) == false) return res.status(400).send('Das Format der E-Mail Adresse ist nicht korrekt!');
 			// Check username format (for programmatic consumers)
-			if (usernameRegExp.test(req.body.username) == false) return res.status(400).send('Username format incorrect!');
+			if (usernameRegExp.test(req.body.username) == false) return res.status(400).send('Das Format des Benutzernamens ist nicht korrekt!');
 			// Get country from user supplied entry
 			var userCountry = await countries.findByCountryCode(req.body.country.toUpperCase());
 			// Check for any account that match given email address
@@ -147,15 +132,15 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 				// Generate Verification Email
 				var body = mailer.buildVerifyEmail(mailToken.token, account.username, process.env.WEB_HOSTNAME);
 				// Send  Verification Email
-				mailer.send(req.body.email, process.env.MAIL_USER, 'Account Verification for ' + process.env.BRAND, body.text, body.html, function(returnValue) {
+				mailer.send(req.body.email, process.env.MAIL_USER, 'Account Verifizierung für ' + process.env.BRAND, body.text, body.html, function(returnValue) {
 					// Success, 201 Created
 					if (returnValue == true) {
 						sendEventUid(req.path, "Security", "Create Account", req.ip, req.body.username, req.headers['user-agent']);
-						res.status(201).send('A verification email has been sent to: ' + req.body.email + ", you need to verify your account to use this service.")
+						res.status(201).send('Es wurde eine Bestätigungs-E-Mail wurde an: ' + req.body.email + " gesendet. Sie müssen Ihre E-Mail Adresse verifizieren um diesen Dienst nutzen zu können!")
 					}
 					// Failed, 500 Internal Service Error
 					else {
-						res.status(500).send('Verification email failed to send!');
+						res.status(500).send('Bestätigungs-E-Mai konnte nicht gesendet werden!');
 					}
 				});
 			}
@@ -163,24 +148,24 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 				// User exists with this email address, 409 Conflict
 				if (users) {
 					logger.log('error', "[New User] Cannot create new user, user with email address already exists!");
-					return res.status(409).send('User with this email address already exists!');
+					return res.status(409).send('Ein Benutzer mit dieser E-Mail-Adresse existiert bereits!');
 				}
 				// Error occurred with userCountry, 500 Internal Service Error
 				else {
 					logger.log('error', "[New User] Creation failed, country status code: " + userCountry.statusCode);
-					return res.status(500).send('New user creation failed!');
+					return res.status(500).send('Erstellung des Benutzeraccounts fehlgeschlagen!');
 				}
 			}
 		}
 		else {
 			// Missing critical body elements, 400 Bad Request
-			return res.status(400).send('Please complete all required fields!');
+			return res.status(400).send('Bitte füllen Sie alle Pflichtfelder aus!');
 		}
 	}
 	catch (e) {
 		// General failure, 500 Internal Service Error
 		logger.log('error', "[New User] Cannot create new user, error: " + e.stack);
-		return res.status(500).send('New user creation failed!');
+		return res.status(500).send('Erstellung des Benutzeraccounts fehlgeschlagen!');
 	}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -189,11 +174,11 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 router.get(['/verify', '/verify/:token'], defaultLimiter, async (req, res) => {
 	let message = undefined;
 	if (!req.params.token) {
-		message = 'No token value supplied in URL, please ensure you manually enter token value below!';
-		res.render('pages/verify',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Verify Account | " + process.env.BRAND, message: message});
+		message = 'Kein Token-Wert in der URL angegeben, bitte stellen Sie sicher, dass Sie den Token-Wert unten manuell eingeben!';
+		res.render('pages/verify',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Account verifizieren | " + process.env.BRAND, message: message});
 	}
 	else {
-		res.render('pages/verify',{token: req.params.token, user: req.user, brand: process.env.BRAND, title: "Verify Account | " + process.env.BRAND, message: message});
+		res.render('pages/verify',{token: req.params.token, user: req.user, brand: process.env.BRAND, title: "Account verifizieren | " + process.env.BRAND, message: message});
 	}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -205,15 +190,15 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			// Find a matching token, populate user for use in findByUsername account lookup
 			var token = await verifyEmail.findOne({ token: req.body.token }).populate('user').exec();
 			// If no token return 400, bad request
-			if (!token) return res.status(400).send('Unable to find matching token!');
+			if (!token) return res.status(400).send('Es wurde kein passender Token gefunden!');
 			// Find related user, returning hash/ salt
 			var account = await Account.findByUsername(token.user.username, true);
 			// Check account is not already verified (no need to proceed if it is)
 			if (!account) {
-				return res.status(400).send('Unable to find account associated with token!');
+				return res.status(400).send('Konto für Token nicht gefunden!');
 			}
 			else if (account.isVerified) {
-				return res.status(400).send('Your account is already verified!');
+				return res.status(400).send('Ihr Konto ist bereits verifiziert!');
 			}
 			if (account) logger.log('debug', "[Verify] account hash: " + account.hash + ", account salt: " + account.salt);
 			// Find pattern-based ACL
@@ -244,19 +229,19 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 			logger.log('verbose' , "[Verify] Update user account: " + account.username + " isVerified success");
 			logger.log('verbose' , "[Verify] Update user account: " + account.username + " topics: " + JSON.stringify(aclUser));
 			// Send 200 response
-			return res.status(202).send("The account has been verified, you can now use the service!");
+			return res.status(202).send("Das Konto wurde verifiziert, Sie können den Service jetzt nutzen!");
 		}
 		else {
 			// Token not supplied, send 400 status
 			if (!req.body.token) {
-				return res.status(400).send('Please ensure you fill-in token value!');
+				return res.status(400).send('Bitte stellen Sie sicher, dass Sie den Token-Wert eingeben haben!');
 			}
 		}
 	}
 	catch(e) {
 		// General error, send 500 status
 		logger.log('error' , "[Verify] Update user account error: " + e.stack);
-		return res.status(500).send('Failed to update user account!');
+		return res.status(500).send('Benutzerkonto konnte nicht aktualisiert werden!');
 	}
 });
 
@@ -264,7 +249,7 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 // Verify Resend GET
 ///////////////////////////////////////////////////////////////////////////
 router.get('/verify-resend', defaultLimiter, async (req, res) => {
-    res.render('pages/verify-resend', {user: req.user, brand: process.env.BRAND, title: "Verify Re-Send | " + process.env.BRAND});
+    res.render('pages/verify-resend', {user: req.user, brand: process.env.BRAND, title: "Verifizierungs-Mail anfordern | " + process.env.BRAND});
 });
 ///////////////////////////////////////////////////////////////////////////
 // Verify Resend POST
@@ -276,7 +261,7 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 			var account = await Account.findOne({email: req.body.email});
 			// Check account is not already verified
 			if (!account) {
-				return res.status(400).send('Unable to find matching account, check supplied email address!');
+				return res.status(400).send('Es kann kein passendes Konto gefunden werden. Überprüfen Sie die angegebene E-Mail-Adresse!');
 			}
 			if (!account.isVerified || account.isVerified && account.isVerified == false){
 				// generate new Verification Token
@@ -290,29 +275,29 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 					if (returnValue == true) {
 						sendEventUid(req.path, "Security", "Send re-verification email", req.ip, account.username, req.headers['user-agent']);
 						logger.log('info' , "[Verify Resend] A new verification email has been sent to: " + account.email);
-						return res.status(202).send('A verification email has been sent to: ' + account.email);
+						return res.status(202).send('Eine Bestätigungs-E-Mail wurde an ' + account.email + ' gesendet');
 					}
 					else {
 						logger.log('error' , "[Verify Resend] Failed to send verification email to: " + account.email);
-						return res.status(500).send('Verification email failed to send!');
+						return res.status(500).send('Bestätigungs-E-Mail konnte nicht gesendet werden!');
 					}
 				});
 			}
 			// Account already verified
 			else if (account && account.isVerified && account.isVerified == true) {
-				return res.status(400).send('Your account is already verified!');
+				return res.status(400).send('Ihr Konto ist bereits verifiziert!');
 			}
 		}
 		// Missing req.body.email
 		else {
 			logger.log('verbose' , "[Verify Resend] Missing email address!");
-			return res.status(400).send('Missing email address!');
+			return res.status(400).send('E-Mail Adresse fehlt!');
 		}
 	}
 	catch(e){
 		// General error, send 500 status
 		logger.log('error' , "[Verify Resend] Save user email verification token failed, error: " + e.stack);
-		return res.status(500).send('Failed to generate and send email verification token!');
+		return res.status(500).send('Fehler beim Generieren und Senden des E-Mail-Bestätigungstokens!');
 	}
 });
 
@@ -322,11 +307,11 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 router.get(['/change-password', '/change-password/:token'], restrictiveLimiter, async (req, res) => {
 	let message = undefined;
 	if (!req.params.token && !req.user) {
-		message = 'No token value supplied in URL, please ensure you manually enter token value below!';
-		res.render('pages/change-password',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Change Password | " + process.env.BRAND, message: message})
+		message = 'Kein Token-Wert in der URL angegeben, bitte stellen Sie sicher, dass Sie den Token-Wert unten manuell eingeben haben!';
+		res.render('pages/change-password',{token: undefined, user: req.user, brand: process.env.BRAND, title: "Passwort ändern | " + process.env.BRAND, message: message})
 	}
 	else {
-		res.render('pages/change-password',{token: req.params.token, user: req.user, brand: process.env.BRAND, title: "Change Password | " + process.env.BRAND, message: message})
+		res.render('pages/change-password',{token: req.params.token, user: req.user, brand: process.env.BRAND, title: "Passwort ändern | " + process.env.BRAND, message: message})
 	}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -338,23 +323,21 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 		try {
 			logger.log('verbose' , "[Change Password] Logged in user request to change password for user account: " + req.user.username);
 			// Check password meets complexity requirements (for programmatic consumers)
-			if (passwordRegExp.test(req.body.password) == false) return res.status(400).send('Password does not meet complexity requirements!');
+			if (passwordRegExp.test(req.body.password) == false) return res.status(400).send('Passwort erfüllt nicht die Komplexitätsanforderungen!');
 			var result = await resetPassword(req.user.username, req.body.password);
 			//  Success, send 202 status
 			if (result == true) {
-				sendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, req.user.username, req.headers['user-agent']);
-				res.status(202).send('Changed Password!');
+				res.status(202).send('Passwort geändert!');
 			}
 			//  Failure, send status 500, Internal Service Error
 			else {
-				sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);
-				res.status(500).send("Problem setting new password");
+				res.status(500).send("Fehler bei setzen des neues Passworts!");
 			}
 		}
 		catch(e) {
 			// General error, send 500 status
 			logger.log('error' , "[Change Password] Error setting authenticated user's password, error: " + e.stack);
-			res.status(500).send("Error setting new password!");
+			res.status(500).send("Fehler bei setzen des neues Passworts!");
 		}
 
 	}
@@ -369,31 +352,29 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 				var lostPassword = await LostPassword.findOne({uuid: token}).populate('user').exec();
 				if (lostPassword) {
 					// Check password meets complexity requirements (for programmatic consumers)
-					if (passwordRegExp.test(req.body.password) == false) return res.status(400).send('Password does not meet complexity requirements!');
+					if (passwordRegExp.test(req.body.password) == false) return res.status(400).send('Passwort erfüllt nicht die Komplexitätsanforderungen!');
 					// Remove one-time use token
 					lostPassword.remove();
 					// Reset user password
 					var result = await resetPassword(lostPassword.user.username, req.body.password);
 					logger.log('verbose' , "[Change Password] resetPassword result: " + result);
 					if (result == true) {
-						sendEventUid(req.path, "Security", "Successfully Changed Password", req.ip, lostPassword.user.username, req.headers['user-agent']);
-						return res.status(202).send('Changed Password!');
+						return res.status(202).send('Passwort geändert!');
 					}
 					else {
-						sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, lostPassword.user.username, req.headers['user-agent']);
-						return res.status(500).send("Error setting new password");
+						return res.status(500).send("Fehler bei setzen des neues Passworts!");
 					}
 				}
 			}
 			else {
-				return res.status(400).send('Please ensure you fill-in token value!');
+				return res.status(400).send('Bitte stellen Sie sicher, dass Sie den Token-Wert eingeben haben!');
 			}
 		}
 		catch(e) {
 			// General error, send 500 status
 			logger.log('error' , "[Change Password] Error setting unauthenticated user's password, error: " + e.stack);
 			//sendEventUid(req.path, "Security", "Failed to Changed Password", req.ip, req.user.username, req.headers['user-agent']);
-			res.status(500).send("Error setting new password");
+			res.status(500).send("Fehler bei setzen des neues Passworts!");
 		}
 	}
 });
@@ -403,7 +384,7 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 ///////////////////////////////////////////////////////////////////////////
 router.get('/lost-password', defaultLimiter, async (req, res) => {
 	//outputSessionID(req, "/lost-password");
-    res.render('pages/lost-password', { user: req.user, brand: process.env.BRAND, title: "Account Recovery | " + process.env.BRAND});
+    res.render('pages/lost-password', { user: req.user, brand: process.env.BRAND, title: "Passwort zurücksetzen | " + process.env.BRAND});
 });
 ///////////////////////////////////////////////////////////////////////////
 // lost-password (Post) restrictiveLimiter
@@ -412,25 +393,25 @@ router.post('/lost-password', defaultLimiter, async (req, res) => {
 	try {
 		var email = req.body.email;
 		var user = await Account.findOne({email: email});
-		if (!user) return res.status(400).send('Unable to find user with supplied email address!');
+		if (!user) return res.status(400).send('Benutzer mit angegebener E-Mail-Adresse kann nicht gefunden werden!');
 		var lostPassword = new LostPassword({user: user});
 		await lostPassword.save();
 		var body = mailer.buildLostPasswordBody(lostPassword.uuid, user.username, process.env.WEB_HOSTNAME);
-		mailer.send(req.body.email, process.env.MAIL_USER, 'Password Reset for ' + process.env.BRAND, body.text, body.html, function(returnValue) {
+		mailer.send(req.body.email, process.env.MAIL_USER, 'Passwort für ' + process.env.BRAND + ' zurücksetzen', body.text, body.html, function(returnValue) {
 			// Success, 202 Accepted
 			if (returnValue == true) {
-				res.status(202).send('A password reset email has been sent to: ' + req.body.email + ".")
+				res.status(202).send('Eine E-Mail zum Zurücksetzen des Passworts wurde an: ' + req.body.email + " gesendet.")
 			}
 			// Failed, 500 Internal Service Error
 			else {
-				res.status(500).send('Password reset email failed to send!');
+				res.status(500).send('E-Mail zum Zurücksetzen des Passworts konnte nicht gesendet werden!');
 			}
 		});
 	}
 	catch(e){
 		// General error, send 500 status
 		logger.log('error' , "[Lost Password] Error generating lost password token/ email, error: " + e.stack);
-		res.status(500).send('Error generating lost password token/ email');
+		res.status(500).send('Fehler beim Generieren des verlorenen Passwort-Tokens / der E-Mail');
 	}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -442,12 +423,12 @@ router.get('/my-account', defaultLimiter,
 		try {
 			//outputSessionID(req, "/my-account");
 			var user = await Account.findOne({username: req.user.username});
-			res.render('pages/account',{user: user, acc: true, brand: process.env.BRAND, title: "My Account | " + process.env.BRAND});
+			res.render('pages/account',{user: user, acc: true, brand: process.env.BRAND, title: "Mein Account | " + process.env.BRAND});
 		}
 		catch(e) {
 			// General error, send 500 status
 			logger.log('error' , "[My Account] Error rendering My Account, error: " + e.stack);
-			res.status(500).send('Failed to render page!');
+			res.status(500).send('Seite konnte nicht gerendert werden!');
 		}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -487,12 +468,12 @@ router.get('/devices', defaultLimiter,
 		if (!req.user.isVerified || req.user.isVerified == false){verified = false}
 		else {verified = true}
 		// Render Device page
-		res.render('pages/devices',{user: req.user, devices: devices, count: countDevs, grants: countUserGrants[0].countGrants, isVerified: verified, fqdn: process.env.WEB_HOSTNAME, devs: true, brand: process.env.BRAND, title: "My Devices | " + process.env.BRAND});
+		res.render('pages/devices',{user: req.user, devices: devices, count: countDevs, grants: countUserGrants[0].countGrants, isVerified: verified, fqdn: process.env.WEB_HOSTNAME, devs: true, brand: process.env.BRAND, title: "Meine Geräte | " + process.env.BRAND});
 	}
 	catch(e){
 		// General error, send 500 status
 		logger.log('error' , "[Devices] Error rendering user Devices, error: " + e.stack);
-		res.status(500).send('Failed to render page!');
+		res.status(500).send('Seite konnte nicht gerendert werden!');
 	}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -512,7 +493,7 @@ router.put('/devices', defaultLimiter,
 			var checkDevice = await Devices.findOne({username:user, friendlyName: device.friendlyName});
 			if (checkDevice) {
 				logger.log('warn' , "[Create Device] User tried to create a device with duplicate friendly name");
-				return res.status(500).send('Please ensure your devices have unique names!');
+				return res.status(500).send('Bitte stellen Sie sicher, dass Ihre Geräte eindeutige Namen haben!');
 			}
 			
 
@@ -527,7 +508,7 @@ router.put('/devices', defaultLimiter,
 		catch (e){
 			// General error, send 500 status
 			logger.log('error' , "[Create Device] Error creating new device, error: " + e.stack);
-			res.status(500).send('Failed to create device!');
+			res.status(500).send('Gerät konnte nicht erstellt werden!');
 		}
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -563,7 +544,7 @@ router.post('/account/:user_id', defaultLimiter,
 		}
 		catch(e){
 			logger.log('warn', "[Update User] Error on updating account, error: " + e.stack);
-			res.status(500).send("Unable to update user account!");
+			res.status(500).send("Benutzerkonto kann nicht aktualisiert werden!");
 		}
 });
 ///////////////////////////////////////////////////////////////////////////

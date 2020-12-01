@@ -39,9 +39,8 @@
         <div class="collapse navbar-collapse" id="navbar">
           <ul class="navbar-nav mr-auto">
                 <li <% if (locals.home) {%>class="active"<% } %>><a class="nav-link" href="/">Home</a></li>
-                <!--<li <% if (locals.docs) {%>class="active"<% } %>><a class="nav-link" href="https://docs.cb-net.co.uk" target="_blank">Documentation</a></li>-->
-                <li <% if (locals.about) {%>class="active"<% } %>><a class="nav-link" href="/about">About</a></li>
-                <li <% if (locals.privacy) {%>class="active"<% } %>><a class="nav-link" href="/privacy">Privacy Policy</a></li>
+                <li <% if (locals.about) {%>class="active"<% } %>><a class="nav-link" href="/about">Über</a></li>
+                <li <% if (locals.privacy) {%>class="active"<% } %>><a class="nav-link" href="/privacy">Datenschutz</a></li>
                 <% if (user) { %>
                   <% if (user.superuser == false) { %>
                     <li <% if (locals.acc) {%>class="active"<% } %>><a class="nav-link" href="/my-account">Mein Account</a></li>
