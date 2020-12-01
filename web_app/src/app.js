@@ -52,8 +52,6 @@ var cookieSecret = (process.env.COOKIE_SECRET || 'ihytsrf334');
 if (cookieSecret == 'ihytsrf334') {logger.log("warn", "[App] Using default Cookie Secret, please supply new secret using COOKIE_SECRET environment variable")}
 else {logger.log("info", "[App] Using User-Defined cookie secret: " + cookieSecret)}
 
-
-var environment = (process.env.ENVIRONMENT || 'dev');
 ///////////////////////////////////////////////////////////////////////////
 // Main
 ///////////////////////////////////////////////////////////////////////////
@@ -208,29 +206,11 @@ const createServer = async() => {
 		app.use(morgan("combined", {stream: logger.stream})); // change to use Winston
 		// Enable req.flash support
 		app.use(flash());
-		if(environment === 'prod'){
-			app.set('env', 'production');
-		}else{
-			app.set('env', 'development');
-		}
 		// Handle production environment session handler options
 		if (app.get('env') === 'production') {
 			logger.log('info', "[App] Production Environment detected enabling trust proxy/ secure cookies");
 			app.enable('trust proxy');
-
-			// app.use(session({
-			// 	store: new mongoStore({
-			// 		url: "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/sessions?connectTimeoutMS=100000&minPoolSize=5&maxPoolSize=10",
-			// 		touchAfter: 24 * 3600
-			// 	}),
-			// 	resave: false,
-			// 	saveUninitialized: false,
-			// 	secret: cookieSecret,
-			// 	cookie: {
-			// 		secure: true
-			// 	}
-			// }));
-
+			
 			app.use(cookieSession({
 				name: 'session',
 				keys: [cookieSecret],
@@ -241,15 +221,6 @@ const createServer = async() => {
 		}
 		// Handle non production environment session handler options
 		else {
-			// app.use(session({
-			// 	store: new mongoStore({
-			// 		url: "mongodb://" + mongo_user +":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/sessions?connectTimeoutMS=100000&minPoolSize=5&maxPoolSize=10",
-			// 		touchAfter: 24 * 3600
-			// 	}),
-			// 	resave: false,
-			// 	saveUninitialized: false,
-			// 	secret: cookieSecret
-			// }));
 			logger.log('info', "[App] Development Environment detected disable trust proxy/ secure cookies");
 			app.use(cookieSession({
 				name: 'session',
