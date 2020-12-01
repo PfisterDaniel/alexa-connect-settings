@@ -82,10 +82,7 @@ if (!(process.env.MONGO_HOST && process.env.MQTT_URL)) {
 if (!(process.env.MAIL_SERVER && process.env.MAIL_USER && process.env.MAIL_PASSWORD)) {
 	logger.log('warn',"[Core] No MAIL_SERVER/ MAIL_USER/ MAIL_PASSWORD environment variable supplied. System generated emails will generate errors");
 }
-// Warn on SYNC_API not being specified/ request SYNC will be disabled
-if (!(process.env.HOMEGRAPH_APIKEY)){
-	logger.log('warn',"[Core] No HOMEGRAPH_APIKEY environment variable supplied. New devices, removal or device changes will not show in users Google Home App without this");
-}
+
 ///////////////////////////////////////////////////////////////////////////
 // Passport Configuration
 ///////////////////////////////////////////////////////////////////////////
@@ -316,11 +313,9 @@ const createServer = async() => {
 		const rtDefault = require('./routes/default');
 		const rtAdmin = require('./routes/admin');
 		const rtAuth = require('./routes/auth');
-		const rtGhome = require('./routes/ghome');
 		const rtAlexa = require('./routes/alexa');
 		app.use('/admin', rtAdmin); // Admin Interface
 		app.use('/auth', rtAuth); // OAuth endpoints
-		app.use('/api/ghome', rtGhome); // Google Home API
 		app.use('/api/v1', rtAlexa); // Alexa API
 		app.use('/', rtDefault);
 		///////////////////////////////////////////////////////////////////////////
