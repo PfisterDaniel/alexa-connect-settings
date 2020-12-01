@@ -1,19 +1,19 @@
 <%- include('../fragments/header'); -%>
 	<div class="container main-content">
-		<h1>User Devices</h1>
-		<h3>Total Count: <%= devicecount %></h3>
+		<h1>Benutzergeräte</h1>
+		<h3>Gesamt Anzahl: <%= devicecount %></h3>
 		<table id="tblDevices" class="table table-responsive table-sm table-striped" style="display:none">
 			<thead>
 				<tr>
 				  <th scope="col">EndpointId</th>
-				  <th scope="col">Username</th>
+				  <th scope="col">Benutzername</th>
 				  <th scope="col">Friendly Name</th>
-				  <th scope="col">Capabilities</th>
-                  <th scope="col">Type</th>
-                  <th scope="col">Report State</th>
-                  <th scope="col">State</th>
-                  <!--<th scope="col">Edit</th>-->
-				  <th scope="col">Manage</th>
+				  <th scope="col">Fähigkeiten</th>
+				  <th scope="col">Typ</th>
+				  <th scope="col">Report State</th>
+				  <th scope="col">State</th>
+                  		  <!--<th scope="col">Edit</th>-->
+				  <th scope="col">Verwalten</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -22,24 +22,24 @@
 						<th scope="row"><%= device.endpointId %></th>
 						<td><%= device.username %></td>
 						<td><%= device.friendlyName %></td>
-                        <td>
+                        			<td>
 							<ul class="list-unstyled">
 								<% device.capabilities.forEach(function(capability){ %>
 									<li><%= capability %></li>
 								<% }); %>
 							</ul>
-                        </td>
-                        <td>
+                        			</td>
+                        			<td>
 							<ul class="list-unstyled">
 								<% device.displayCategories.forEach(function(category){ %>
 									<li><%= category %></li>
 								<% }); %>
 							</ul>
-                        </td>
-                        <td><%= device.reportState %></td>
+                        			</td>
+                        			<td><%= device.reportState %></td>
 						<td><button type="button" class="btn btn-secondary" onclick="viewState('<%= device._id %>')">State</button></td>
-						<!--<td><button type="button" class="btn btn-secondary" onclick="editDevice('<%= device._id %>')">Edit</button></td>-->
-                        <td><button type="button" class="btn btn-danger" onclick="deleteDevice('<%= device._id %>')">Delete</button></td>
+						<!--<td><button type="button" class="btn btn-secondary" onclick="editDevice('<%= device._id %>')">Bearbeiten</button></td>-->
+                        			<td><button type="button" class="btn btn-danger" onclick="deleteDevice('<%= device._id %>')">Löschen</button></td>
 					</tr>
 				<% }); %>
 			</tbody>
@@ -57,12 +57,12 @@
 				  </button>
 				</div>
 				<div class="modal-body">
-						<label for="state">State: </label>
-						<br>
-						<textarea id="state" class="form-control" disabled></textarea>
+					<label for="state">State: </label>
+					<br>
+					<textarea id="state" class="form-control" disabled></textarea>
 				</div>
 				<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
