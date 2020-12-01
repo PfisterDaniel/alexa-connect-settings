@@ -52,6 +52,7 @@ var cookieSecret = (process.env.COOKIE_SECRET || 'ihytsrf334');
 if (cookieSecret == 'ihytsrf334') {logger.log("warn", "[App] Using default Cookie Secret, please supply new secret using COOKIE_SECRET environment variable")}
 else {logger.log("info", "[App] Using User-Defined cookie secret: " + cookieSecret)}
 
+
 var environment = (process.env.ENVIRONMENT || 'dev');
 ///////////////////////////////////////////////////////////////////////////
 // Main
