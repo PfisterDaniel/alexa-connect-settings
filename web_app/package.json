@@ -19,7 +19,7 @@
     "url": "https://github.com/PfisterDaniel/alexa-connect"
   },
   "homepage": "https://service.alexa-connect.de/",
-  "author": "Daniel Pfister",
+  "author": "Daniel Pfister <support@alexa-connect.de>",
   "license": "Apache-2.0",
   "dependencies": {
     "axios" : "^0.19.2",
