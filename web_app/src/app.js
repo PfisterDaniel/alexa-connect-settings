@@ -50,7 +50,7 @@ var mqtt_password = (process.env.MQTT_PASSWORD);
 // Cookie Secret
 var cookieSecret = (process.env.COOKIE_SECRET || 'ihytsrf334');
 if (cookieSecret == 'ihytsrf334') {logger.log("warn", "[App] Using default Cookie Secret, please supply new secret using COOKIE_SECRET environment variable")}
-else {logger.log("info", "[App] Using user-defined cookie secret")}
+else {logger.log("info", "[App] Using User-Defined cookie secret: " + cookieSecret)}
 
 var environment = (process.env.ENVIRONMENT || 'dev');
 ///////////////////////////////////////////////////////////////////////////
@@ -91,16 +91,9 @@ const authenticate = Account.authenticate();
 passport.use(new LocalStrategy((username, password, cb) => {
   authenticate(username, password, (err, user, error) => {
 	logger.log('debug',"[Auth] Passport Local Strategy, authentication called for user: " + username);
-	logger.log('debug',"[Auth] User: " + username);
-	logger.log('debug',"[Auth] Password: " + password);
-	logger.log('debug',"[Auth] Error: " + err);
 	
 	// An error ocurred, do not authenticate
 	if (err) { return cb(err); }
-	// Check user is active, if not send customised error
-	//if (user && user.active == false ) {return cb(null, false, new Error("User account disabled!"))};
-	logger.log('debug',"[Auth] Activ: " + user.active);
-	logger.log('debug',"[Auth] Verified: " + user.isVerified);
 	// Check user is active and verified, if not send customised error depending on scenario
 	if (user && (!user.active || !user.isVerifed)) {
 		if (!user.active) return cb(null, false, new Error("User account disabled!"));
@@ -221,7 +214,7 @@ const createServer = async() => {
 		}
 		// Handle production environment session handler options
 		if (app.get('env') === 'production') {
-			logger.log('info', "[App] Production environment detected enabling trust proxy/ secure cookies");
+			logger.log('info', "[App] Production Environment detected enabling trust proxy/ secure cookies");
 			app.enable('trust proxy');
 
 			// app.use(session({
@@ -256,7 +249,7 @@ const createServer = async() => {
 			// 	saveUninitialized: false,
 			// 	secret: cookieSecret
 			// }));
-			logger.log('info', "[App] Development environment detected disable trust proxy/ secure cookies");
+			logger.log('info', "[App] Development Environment detected disable trust proxy/ secure cookies");
 			app.use(cookieSession({
 				name: 'session',
 				keys: [cookieSecret],
