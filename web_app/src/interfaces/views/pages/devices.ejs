@@ -2,7 +2,7 @@
 
 <% if (isVerified == false) { %>
 	<div class="alert alert-danger alert-dismissible fade show" role="alert">
-		<strong>Warning!</strong> You need to verify your account! Browse to <a href='https://<%= fqdn %>/verify-resend'>https://<%= fqdn %>/verify-resend</a> to generate email verification token and complete the process.
+		<strong>Warnung!</strong> Sie müssen Ihr Konto verifizieren! Zum abschließen der Registrierung senden Sie sich eine Verifizierungs-Mail und bestätigen Sie diese: <a href='https://<%= fqdn %>/verify-resend'>https://<%= fqdn %>/verify-resend</a>
 		<button type="button" class="close" data-dismiss="alert" aria-label="Schließen">
 		<span aria-hidden="true">&times;</span>
 		</button>
@@ -10,19 +10,13 @@
 <% } %>
 <% if (grants == 0) { %>
 	<div class="alert alert-danger alert-dismissible fade show" role="alert">
-		<strong>Warning!</strong> You still need to link your Amazon/ Google Account to use this service! See <a href='/docs'>here</a> for more information.
+		<strong>Warnung!</strong> Sie müssen noch Ihr Amazon-Konto verknüpfen, um diesen Service nutzen zu können! Für mehr Information siehe: <a href='/docs'>Info</a>.
 		<button type="button" class="close" data-dismiss="alert" aria-label="Schließen">
 		<span aria-hidden="true">&times;</span>
 		</button>
 	</div>
 <% } %>
 
-<div class="alert alert-secondary alert-dismissible fade show" role="alert">
-	You can support the ongoing running of this service via <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=A2F2KF4GKKXT6&currency_code=GBP&source=url' target='_blank'>PayPal</a> or <a href='https://github.com/coldfire84' target='_blank'>GitHub Sponsors</a>.
-	<button type="button" class="close" data-dismiss="alert" aria-label="Schließen">
-	<span aria-hidden="true">&times;</span>
-	</button>
-</div>
 
 <div class="container main-content">
 	<h1>Geräte des Benutzers: <%= user.username %></h1>

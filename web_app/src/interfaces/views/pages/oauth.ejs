@@ -1,6 +1,6 @@
 <%- include('../fragments/header'); -%>
   <div class="container main-content">
-    <h1 class="h3 mb-3 font-weight-normal">Connect with <%= application.title %></h1>
+    <h1 class="h3 mb-3 font-weight-normal">Verknüpfen mit <%= application.title %></h1>
     <form action="/auth/finish" method="post">
         <input name="transaction_id" value="<%= transaction_id %>" hidden>
         <input name="response_type" value="<%= response_type %>" hidden>

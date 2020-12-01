@@ -50,7 +50,7 @@
                 <% } %>
                 <% if (user) { %>
                   <!-- <li><a class="nav-link" href="/logout">Logout <%= user.username %></a></li> -->
-                  <li><a class="nav-link" href="/logout">Logout</a></li>
+                  <li><a class="nav-link" href="/logout">Abmelden</a></li>
                 <% } else { %>
                   <li <% if (locals.login) {%>class="active"<% } %>><a class="nav-link" href="/login">Anmelden</a></li>
                   <li <% if (locals.newuser) {%>class="active"<% } %>><a class="nav-link" href="/new-user">Registrieren</a></li>
