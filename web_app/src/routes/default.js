@@ -22,25 +22,12 @@ var logger = require('../loaders/logger');
 const defaultLimiter = require('../loaders/limiter').defaultLimiter;
 const restrictiveLimiter = require('../loaders/limiter').restrictiveLimiter;
 const removeUserServices = require('../services/func-services').removeUserServices;
-///////////////////////////////////////////////////////////////////////////
-// Functions
-///////////////////////////////////////////////////////////////////////////
-const gHomeFunc = require('../services/func-ghome');
-const gHomeSync = gHomeFunc.gHomeSyncAsync;
-const sendPageView = require('../services/ganalytics').sendPageView;
-const sendPageViewUid = require('../services/ganalytics').sendPageViewUid;
-const sendEventUid = require('../services/ganalytics').sendEventUid;
+
 ///////////////////////////////////////////////////////////////////////////
 // Variables
 ///////////////////////////////////////////////////////////////////////////
 //var debug = (process.env.ALEXA_DEBUG || false);
 var mqtt_user = (process.env.MQTT_USER);
-// Google Home Sync =========================
-var enableGoogleHomeSync = true;
-// Warn on SYNC_API not being specified/ request SYNC will be disabled
-if (!(process.env.HOMEGRAPH_APIKEY)){
-	enableGoogleHomeSync = false;
-}
 // Regular Expressions, used for validating API POST requests
 let passwordRegExp = /(?=^.{12,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
 let emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -49,7 +36,6 @@ let usernameRegExp = /^[a-z0-9]{5,15}$/;
 // Home
 ///////////////////////////////////////////////////////////////////////////
 router.get('/', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Home', req.ip, req.headers['user-agent']);
 	// outputSessionID(req, "/");
 	res.render('pages/index', {user: req.user, home: true, brand: process.env.BRAND, title: "Home | " + process.env.BRAND});
 });
@@ -57,7 +43,6 @@ router.get('/', defaultLimiter, async (req, res) => {
 // Docs
 ///////////////////////////////////////////////////////////////////////////
 router.get('/docs', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Documentation', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/docs");
 	//res.render('pages/docs', {user: req.user, docs: true, brand: process.env.BRAND, title: "Documentation | " + process.env.BRAND});
 	res.status(301).redirect('https://docs.cb-net.co.uk');
@@ -66,7 +51,6 @@ router.get('/docs', defaultLimiter, async (req, res) => {
 // About
 ///////////////////////////////////////////////////////////////////////////
 router.get('/about', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'About', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/about");
 	res.render('pages/about', {user: req.user, about: true, brand: process.env.BRAND, title: "About | " + process.env.BRAND});
 });
@@ -74,7 +58,6 @@ router.get('/about', defaultLimiter, async (req, res) => {
 // Privacy
 ///////////////////////////////////////////////////////////////////////////
 router.get('/privacy', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Privacy', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/privacy");
 	res.render('pages/privacy', {user: req.user, privacy: true, brand: process.env.BRAND, title: "Privacy Policy | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME});
 });
@@ -82,7 +65,6 @@ router.get('/privacy', defaultLimiter, async (req, res) => {
 // TOS
 ///////////////////////////////////////////////////////////////////////////
 router.get('/tos', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Terms of Service', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/tos");
 	res.render('pages/tos', {user: req.user, tos: true, brand: process.env.BRAND, title: "Terms of Service | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME});
 });
@@ -90,7 +72,6 @@ router.get('/tos', defaultLimiter, async (req, res) => {
 // Login (Get)
 ///////////////////////////////////////////////////////////////////////////
 router.get('/login', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Login', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/login");
 	res.render('pages/login',{user: req.user, login: true, brand: process.env.BRAND, title: "Login | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME, message: req.flash('error')});
 });
@@ -98,7 +79,6 @@ router.get('/login', defaultLimiter, async (req, res) => {
 // Logout
 ///////////////////////////////////////////////////////////////////////////
 router.get('/logout', defaultLimiter, function(req,res){
-	sendPageView(req.path, 'Logout', req.ip, req.headers['user-agent']);
 	req.logout();
 	if (req.query.next) {
 		//console.log(req.query.next);
@@ -115,7 +95,6 @@ router.get('/logout', defaultLimiter, function(req,res){
 router.post('/login', defaultLimiter,
 	passport.authenticate('local',{ failureRedirect: '/login', failureFlash: true, session: true }),
 	function(req,res){
-		sendPageViewUid(req.path, 'Login', req.ip, req.user.username, req.headers['user-agent']);
 		if (req.query.next) {
 			res.reconnect(req.query.next);
 		} else {
@@ -131,7 +110,6 @@ router.post('/login', defaultLimiter,
 // Register/ Newuser (Get)
 ///////////////////////////////////////////////////////////////////////////
 router.get('/new-user', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'New User', req.ip, req.headers['user-agent']);
 	//outputSessionID(req, "/new-user");
     res.render('pages/register',{user: req.user, newuser: true, brand: process.env.BRAND, title: "Register | " + process.env.BRAND, fqdn: process.env.WEB_HOSTNAME});
 });
@@ -209,7 +187,6 @@ router.post('/new-user', restrictiveLimiter, async (req, res) => {
 // Verify GET
 ///////////////////////////////////////////////////////////////////////////
 router.get(['/verify', '/verify/:token'], defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Verify', req.ip, req.headers['user-agent']);
 	let message = undefined;
 	if (!req.params.token) {
 		message = 'No token value supplied in URL, please ensure you manually enter token value below!';
@@ -287,7 +264,6 @@ router.post('/verify', defaultLimiter, async (req, res) => {
 // Verify Resend GET
 ///////////////////////////////////////////////////////////////////////////
 router.get('/verify-resend', defaultLimiter, async (req, res) => {
-	sendPageView(req.path, 'Verify Resend', req.ip, req.headers['user-agent']);
     res.render('pages/verify-resend', {user: req.user, brand: process.env.BRAND, title: "Verify Re-Send | " + process.env.BRAND});
 });
 ///////////////////////////////////////////////////////////////////////////
@@ -344,7 +320,6 @@ router.post('/verify-resend', defaultLimiter,  async (req, res) => {
 // change-password/:token (Get)
 ///////////////////////////////////////////////////////////////////////////
 router.get(['/change-password', '/change-password/:token'], restrictiveLimiter, async (req, res) => {
-	sendPageView(req.path, 'Change Password with Token', req.ip, req.headers['user-agent']);
 	let message = undefined;
 	if (!req.params.token && !req.user) {
 		message = 'No token value supplied in URL, please ensure you manually enter token value below!';
@@ -427,12 +402,6 @@ router.post('/change-password', defaultLimiter, async (req, res) => {
 // lost-password (Get)
 ///////////////////////////////////////////////////////////////////////////
 router.get('/lost-password', defaultLimiter, async (req, res) => {
-	if (req.user){
-		sendPageViewUid(req.path, 'Lost Password', req.ip, req.user.username, req.headers['user-agent']);
-	}
-	else {
-		sendPageView(req.path, 'Lost Password', req.ip, req.headers['user-agent']);
-	}
 	//outputSessionID(req, "/lost-password");
     res.render('pages/lost-password', { user: req.user, brand: process.env.BRAND, title: "Account Recovery | " + process.env.BRAND});
 });
@@ -471,7 +440,6 @@ router.get('/my-account', defaultLimiter,
     ensureAuthenticated,
     async (req, res) => {
 		try {
-			sendPageViewUid(req.path, 'My Account', req.ip, req.user.username, req.headers['user-agent']);
 			//outputSessionID(req, "/my-account");
 			var user = await Account.findOne({username: req.user.username});
 			res.render('pages/account',{user: user, acc: true, brand: process.env.BRAND, title: "My Account | " + process.env.BRAND});
@@ -489,7 +457,6 @@ router.get('/devices', defaultLimiter,
 	ensureAuthenticated,
 	async (req, res) => {
 	try {
-		sendPageViewUid(req.path, 'My Devices', req.ip, req.user.username, req.headers['user-agent']);
 		var user = req.user.username;
 		// Find user devices
 		var devices = await Devices.find({username:user});
@@ -547,11 +514,7 @@ router.put('/devices', defaultLimiter,
 				logger.log('warn' , "[Create Device] User tried to create a device with duplicate friendly name");
 				return res.status(500).send('Please ensure your devices have unique names!');
 			}
-			// Require 2FA PIN on Google Home-enabled user Smart Lock
-			if (req.user.activeServices.indexOf('Google') > -1 && device.displayCategories == 'SMARTLOCK' && (!device.attributes.require2FA || !device.attributes.pin || !device.attributes.type2FA)){
-				logger.log('warn' , "[Create Device] Google Home user tried to create new Smart Lock device without a PIN");
-				return res.status(500).send('As a Google Home user you must set a PIN on your lock!');
-			}
+			
 
 			// Create new device
 			var dev = new Devices(device);
@@ -560,7 +523,6 @@ router.put('/devices', defaultLimiter,
 			// Success, send 201 status
 			res.status(201).send(dev);
 			logger.log('debug', "[Devices] New device created: " + JSON.stringify(dev));
-			if (enableGoogleHomeSync == true){gHomeSync(req.user._id)}; // Sync changes with Google Home Graph API
 		}
 		catch (e){
 			// General error, send 500 status
@@ -667,7 +629,6 @@ async (req, res) => {
 			await alexaAuthModels.AlexaAuthRefreshToken.deleteMany({user: userId});
 			// Remove active services
 			removeUserServices(userAccount.username, "Amazon");
-			removeUserServices(userAccount.username, "Google");
 			// Success send 200 status
 			res.status(202).json({message: 'deleted OAuth tokens'});
 			if (req.user.superuser === true) {
@@ -708,19 +669,11 @@ router.post('/device/:dev_id', defaultLimiter,
 				data.attributes = device.attributes;
 				data.state = device.state;
 
-				// Require 2FA PIN on Google Home-enabled user Smart Lock
-				if (req.user.activeServices.indexOf('Google') > -1 && device.displayCategories == 'SMARTLOCK' && (!device.attributes.require2FA || !device.attributes.pin || !device.attributes.type2FA)){
-					logger.log('warn' , "[Create Device] Google Home user tried to create new Smart Lock device without a PIN");
-					return res.status(500).send('As a Google Home user you must set a PIN on your lock!');
-				}
-
 				// Save updated device
 				await data.save();
 				// Return 201 status
 				res.status(201).send(data);
 				logger.log('debug', "[Update Device] Updated device for user: " + req.user.username + ", device: " + JSON.stringify(data));
-				// Sync changes with Google Home Graph API
-				if (enableGoogleHomeSync == true){gHomeSync(req.user._id)};
 			}
 			else {
 				// Access denied, send 401 status
@@ -747,16 +700,12 @@ router.delete('/device/:dev_id', defaultLimiter,
 				// Delete device, using req.user.username and _id
 				await Devices.deleteOne({_id: id, username: user});
 				res.status(202).send();
-				// Sync changes with Google Home Graph API
-				if (enableGoogleHomeSync == true){gHomeSync(req.user._id)};
 			}
 			// User is SU, can delete any device
 			else if  (req.user.superuser === true) {
 				// Delete device, using _id only, SU limited
 				await Devices.deleteOne({_id: id});
 				res.status(202).send();
-				// Sync changes with Google Home Graph API, need to get user._id to do this
-				// if (enableGoogleHomeSync == true){gHomeSync(req.user._id)};
 			}
 		}
 		catch(e){
@@ -778,7 +727,6 @@ router.post('/api/v1/devices', defaultLimiter,
 				await Devices.updateOne({username: req.user,endpointId: endpointId},devices[i],{upsert: true})
 			}
 			res.status(202).send();
-			if (enableGoogleHomeSync == true){gHomeSync(req.user._id)}; // Sync changes with Google Home Graph API
 		} else {
 			res.status(500).send();
 		}
