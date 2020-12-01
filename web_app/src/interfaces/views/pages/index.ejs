@@ -1,22 +1,16 @@
 <%- include('../fragments/header'); -%>
-  <div class="alert alert-primary alert-dismissible fade show" role="alert">
+  <!--<div class="alert alert-primary alert-dismissible fade show" role="alert">
       <strong>Google Assistant support now available for testing!</strong> See <a href='/docs#account-linking'>here</a> for more information.
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
       </button>
-  </div>
+  </div>-->
 
   <div class="container main-content">
     <h1 class="notranslate"><%= brand %></h1>
-    <p>Welcome to the registration point for <%= brand %> - this service works with both Amazon Alexa and Google Assistant/ Google Home.</p>
-
-    <p>With 4500+ users, and 14000+ defined devices, available in 12 Amazon Alexa markets, English and German locales for Google Home/ Google Assistant (more markets to follow!),  this web service enables you to quickly bring voice-control to your Node-RED flows. </p>
-    <p>The service supports "out of band" state updates (from physical or other automated device interactions) whilst providing real-time visibility of device state across Smart Assistant applications.</p>
-
-    <p>You can support the ongoing development and hosting costs of this service via PayPal: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=A2F2KF4GKKXT6&currency_code=GBP&source=url">
-      <img src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif"></a> or alternatively through <a href="https://github.com/coldfire84">the GitHub Sponsors programme.</a></p>
+    <p>Welcome to the registration point for <%= brand %> - this service works with Amazon Alexa</p>
     <hr />
-    <p><img src="/static/images/Composite.png" class="img-fluid" alt="Composite screenshots from Alexa and Google Home Apps"></p>
+    <p></p>
 
     <h2>Capabilities</h2>
     <p><%= brand %> supports an array of capabilities, these are outlined in the table below. Note that some capabilities are region-specific, for more information (Alexa-specific) see <a href='https://developer.amazon.com/docs/device-apis/list-of-interfaces.html'>List of Capability Interfaces and Supported Locales.</a>
@@ -41,28 +35,28 @@
           <th scope="row">Brightness</th>
           <td>0-100%, increase, decrease</td>
           <td>MQTT-enabled smart bulb/ light</td>
-          <td>"Alexa, set Lounge Light to 50%", "Alexa, (increase | reduce | dim) Lounge Light", "Hey Google, set Lounge Light to 50%"</td>
+          <td>"Alexa, set Lounge Light to 50%", "Alexa, (increase | reduce | dim) Lounge Light"</td>
         </tr>
         <tr>
           <th scope="row">Channel Control</th>
           <th scope="row">Experimental (number only)</th>
           <td>Channel number or name etc. </td>
           <td>HTTP Out node</td>
-          <td>"Alexa, set Lounge TV channel to (101 | BBC1)", "Hey Google, set Lounge TV to channel 101"</td>
+          <td>"Alexa, set Lounge TV channel to (101 | BBC1)"</td>
         </tr>
         <tr>
           <th scope="row">Color Control</th>
           <th scope="row">ColorSetting</th>
           <td>Red, Green, Blue etc. </td>
           <td>MQTT-enabled smart bulb/ light</td>
-          <td>"Alexa, set Lounge Light to (Green | Red | Yellow | etc)", "Hey Google, set Lounge Light to (Green | Red | Yellow | etc)"</td>
+          <td>"Alexa, set Lounge Light to (Green | Red | Yellow | etc)"</td>
         </tr>
         <tr>
           <th scope="row">Color Temperature Control</th>
           <th scope="row">ColorSetting</th>
           <td>Warm, Warm White, Incandescent, Soft White, White, Daylight, Daylight White, Cool, Cool White</td>
           <td>MQTT-enabled smart bulb/ light</td>
-          <td>"Alexa, set Lounge Light to Warm White", "Hey Google, set Lounge Light to Warm White"</td>
+          <td>"Alexa, set Lounge Light to Warm White"</td>
         </tr>
         <tr>
           <th scope="row">Contact Sensor</th>
@@ -83,7 +77,7 @@
           <th scope="row">Experimental*</th>
           <td>Lock/ Unlock</td>
           <td>MQTT connected Lock</td>
-          <td>"Alexa, Lock Front Door", "OK Google, unlock Front Door"</td>
+          <td>"Alexa, Lock Front Door"</td>
         </tr>
         <tr>
           <th scope="row">Motion Sensor</th>
@@ -97,7 +91,7 @@
           <th scope="row">Experimental</th>
           <td>Play, Pause, Stop, Fast Forward, Rewind, Next, Previous, Start Over</td>
           <td>Kodi RPC (including Plex Addon control)</td>
-          <td>"Alexa, (pause | play | stop) Kitchen TV", "Hey Google, pause Kitchen TV</td>
+          <td>"Alexa, (pause | play | stop) Kitchen TV"</td>
         </tr>
         <tr>
           <th scope="row">Percentage Control</th>
@@ -111,28 +105,28 @@
           <th scope="row">OnOff</th>
           <td>On/ Off</td>
           <td>Any MQTT enabled smart-switch/ plug, KODI RPC (w/ HDMI CEC)</td>
-          <td>"Alexa, turn (on | off) Kitchen Light", "Alexa, turn (on | off) Kitchen TV", "Hey Google, turn (on | off) Kitchen Light"</td>
+          <td>"Alexa, turn (on | off) Kitchen Light", "Alexa, turn (on | off) Kitchen TV"</td>
         </tr>
         <tr>
           <th scope="row">Range Control</th>
           <th scope="row">OpenClose (Support for Blinds/ Awning only)</th>
           <td>0-100 (Blinds), 0-10 (Anything else)</td>
           <td>Any MQTT enabled smart blinds.</td>
-          <td>"Alexa, (raise | lower) Kitchen Blind", "Alexa, set Kitchen Blind to 100", "Hey Google, (close | open) Kitchen Blind"</td>
+          <td>"Alexa, (raise | lower) Kitchen Blind", "Alexa, set Kitchen Blind to 100"</td>
         </tr>
         <tr>
           <th scope="row">Scene Control</th>
           <th scope="row">Scene</th>
           <td>On/ Off</td>
           <td>Any MQTT enabled smart-switch</td>
-          <td>"Alexa, turn on Movie Night", "Hey Google, start Movie Night"</td>
+          <td>"Alexa, turn on Movie Night"</td>
         </tr>
         <tr>
           <th scope="row">Speaker Control</th>
           <th scope="row">Experimental</th>
           <td>Set volume to #, increase/ decrease volume, mute, unmute</td>
           <td>Amplifier, AVR, any device that can be set to a specific volume</td>
-          <td>"Alexa, (increase | decrease | mute) volume on AV Receiver," "Alexa, set volume on AV Receiver to 50", "Hey Google, set AV Reciver volume to 25%"</td>
+          <td>"Alexa, (increase | decrease | mute) volume on AV Receiver," "Alexa, set volume on AV Receiver to 50"</td>
         </tr>
         <tr>
           <th scope="row">Step Speaker Control</th>
@@ -153,7 +147,7 @@
           <th scope="row">TemperatureSetting</th>
           <td>Auto, Eco, Heat, Cool, specific temperature</td>
           <td>Any Thermostat endpoint in Node-Red</td>
-          <td>"Alexa, set Thermostat to 22 degrees", "Hey Google, set Thermostat to 22 degrees"</td>
+          <td>"Alexa, set Thermostat to 22 degrees"</td>
         </tr>
       </tbody>
     </table>
