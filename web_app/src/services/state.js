@@ -11,22 +11,14 @@ const util = require("util");
 ///////////////////////////////////////////////////////////////////////////
 // Functions
 ///////////////////////////////////////////////////////////////////////////
-const gHomeFunc = require('./func-ghome');
 const alexaFunc = require('./func-alexa');
-const ghomeJWT_file = './ghomejwt.json';
-const gHomeSendState =  gHomeFunc.sendStateAsync;
-const gHomeQueryDeviceState = gHomeFunc.queryDeviceStateAsync;
 const alexaSendState =  alexaFunc.sendStateAsync;
 const alexaQueryDeviceState = alexaFunc.queryDeviceStateAsync;
-const requestToken2Async = gHomeFunc.requestToken2Async;
+
 ///////////////////////////////////////////////////////////////////////////
 // Variables
 ///////////////////////////////////////////////////////////////////////////
 const readFile = util.promisify(fs.readFile);
-// Google Auth JSON Web Token ================
-var gToken = undefined; // Store Report State OAuth Token
-var gHomeReportState = false;
-var keys; // variable used to store JWT for Out-of-Band State Reporting to Google Home Graph API
 // Alexa State Reporting
 var alexaReportState = false;
 if (!process.env.ALEXA_CLIENTID && !process.env.ALEXA_CLIENTSECRET) {
@@ -35,30 +27,7 @@ if (!process.env.ALEXA_CLIENTID && !process.env.ALEXA_CLIENTSECRET) {
 else {
 	alexaReportState = true;
 }
-///////////////////////////////////////////////////////////////////////////
-// Main
-///////////////////////////////////////////////////////////////////////////
-const setupHomeGraph = async() => {
-	try {
-		var data = await readFile(ghomeJWT_file, 'utf8');
-		gHomeReportState = true;
-		keys = JSON.parse(data);
-		// Request Token
-		gToken = await requestToken2Async(keys);
-		logger.log('info', "[State API] Obtained GHome HomeGraph OAuth token");
-		//logger.log('debug', "[State API] GHome HomeGraph OAuth token:" + gToken);
-	}
-	catch(e) {
-		logger.log('error', "[State API] Report state setup failed, error: " + e.stack );
-	}
-}
 
-setupHomeGraph();
-
-// Create timer job to re-request access token before expiration
-var refreshToken = setInterval(function(){
-	setupHomeGraph();
-},3540000);
 ///////////////////////////////////////////////////////////////////////////
 // Functions
 ///////////////////////////////////////////////////////////////////////////
@@ -205,17 +174,6 @@ const updateDeviceState = async(username, endpointId, payload) => {
 			}
 			if (newTemp != undefined){dev.state.thermostatSetPoint = newTemp};
 			if (newMode != undefined){dev.state.thermostatMode = newMode};
-			// Check within supported range of device
-			// if (deviceJSON.hasOwnProperty('attributes')) {
-			// 	if (deviceJSON.attributes.hasOwnProperty('temperatureRange')) {
-			// 		if (deviceJSON.attributes.temperatureRange.hasOwnProperty('temperatureMin') && deviceJSON.attributes.temperatureRange.hasOwnProperty('temperatureMax')) {
-			// 			if (!(newTemp < deviceJSON.attributes.temperatureRange.temperatureMin) || !(newTemp > deviceJSON.attributes.temperatureRange.temperatureMax)) {
-			// 				dev.state.thermostatSetPoint = newTemp;
-			// 				dev.state.thermostatMode = newMode;
-			// 			}
-			// 		}
-			// 	}
-			// }
 		};
 		if (payload.state.hasOwnProperty('temperature')) { // Temperature, with basic validation
 			if (typeof payload.state.temperature == 'number'){
@@ -252,8 +210,6 @@ const updateDeviceState = async(username, endpointId, payload) => {
 			var device = await  Devices.findOne({username: username, endpointId: endpointId});
 			// Get device associated user
 			var user = await Account.findOne({username: username});
-			// Send Google Home State Update, if user is Google Home-enabled
-			if (user.activeServices && user.activeServices.indexOf('Google') > -1){sendGoogleHomeState(user, device)};
 			// Send Alexa State Update, if user is Alexa-enabled
 			if (user.activeServices && user.activeServices.indexOf('Amazon') > -1){sendAlexaState(user, device)};
 			// Return Success
@@ -268,90 +224,6 @@ const updateDeviceState = async(username, endpointId, payload) => {
 	}
 }
 
-// Report State Function for Google Homegraph API
-const sendGoogleHomeState = async(user, device) => {
-	try {
-		// Limit state reporting to specific device types
-		var enableDevTypeStateReport = false;
-		var sendGoogleStateUpdate = false; // NO state-supporting devices by default send updates to Google
-		var hasdisplayCategories = getSafe(() => device.displayCategories);
-		if (hasdisplayCategories != undefined) {
-			// Per-device type send-state configuration, can enable/ disable Alexa and/ or Google Home
-			if (device.displayCategories.indexOf("CONTACT_SENSOR") > -1) {
-				enableDevTypeStateReport = true;
-				//sendGoogleStateUpdate = true;
-			}
-			else if (device.displayCategories.indexOf("INTERIOR_BLIND") > -1) {
-				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
-			}
-			else if (device.displayCategories.indexOf("EXTERIOR_BLIND") > -1) {
-				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
-			}
-			else if (device.displayCategories.indexOf("FAN") > -1) {
-				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
-			}
-			else if (device.displayCategories.indexOf("LIGHT") > -1) {
-				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
-			}
-			else if (device.displayCategories.indexOf("MOTION_SENSOR") > -1) {
-				enableDevTypeStateReport = true;
-			}
-			else if (device.displayCategories.indexOf("THERMOSTAT") > -1) {
-				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
-			}
-			else if (device.displayCategories.indexOf("SMARTPLUG") > -1) {
-				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
-			}
-			else if (device.displayCategories.indexOf("SMARTLOCK") > -1) {
-				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
-			}
-			else {
-				// Unless device type specifically defined above, state updates will NOT be sent
-			}
-		}
-
-		// If user is Google Home user/ Report State is Enable, send state update to Home Graph API
-		if (gHomeReportState == true && sendGoogleStateUpdate == true && enableDevTypeStateReport == true){
-			var response = await gHomeQueryDeviceState(device);
-			if (response != undefined) {
-				var stateReport = {
-					"agentUserId": user._id,
-					"payload": {
-						"devices" : {
-							"states": {}
-						}
-					}
-				}
-				var countProps = Object.keys(response).length; // Drop anything that simply has online: true property
-				if (countProps >= 2) {
-					stateReport.payload.devices.states[device.endpointId] = response;
-					logger.log('debug', "[State API] Generated GHome state report for user: " + user.username + ", report: " + JSON.stringify(stateReport));
-					if (gToken != undefined) {
-						//logger.log('verbose', '[State API] Calling Send State with gToken:' + JSON.stringify(gToken));
-						gHomeSendState(gToken, stateReport, user.username);
-					}
-					else {
-						logger.log('verbose', '[State API] Unable to call GHome Send State, no gToken');
-					}
-				}
-			}
-		}
-		else {
-			if (gHomeReportState == false){logger.log('debug', "[State API] GHome state reporting DISABLED")};
-		}
-	}
-	catch(e) {
-		logger.log('debug', "[State API] GHome gHomeSendState error: " + e.stack)
-	}
-}
-
 const sendAlexaState = async(user, device) => {
 	try {
 		// Limit state reporting to specific device types
@@ -359,41 +231,33 @@ const sendAlexaState = async(user, device) => {
 		var sendAlexaStateUpdate = true; // ALL state-supporting devices by default send updates to Alexa
 		var hasdisplayCategories = getSafe(() => device.displayCategories);
 		if (hasdisplayCategories != undefined) {
-			// Per-device type send-state configuration, can enable/ disable Alexa and/ or Google Home
+			// Per-device type send-state configuration, can enable/ disable Alexa
 			if (device.displayCategories.indexOf("CONTACT_SENSOR") > -1) {
 				enableDevTypeStateReport = true;
-				//sendGoogleStateUpdate = true;
 			}
 			else if (device.displayCategories.indexOf("INTERIOR_BLIND") > -1) {
 				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
 			}
 			else if (device.displayCategories.indexOf("EXTERIOR_BLIND") > -1) {
 				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
 			}
 			else if (device.displayCategories.indexOf("FAN") > -1) {
 				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
 			}
 			else if (device.displayCategories.indexOf("LIGHT") > -1) {
 				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
 			}
 			else if (device.displayCategories.indexOf("MOTION_SENSOR") > -1) {
 				enableDevTypeStateReport = true;
 			}
 			else if (device.displayCategories.indexOf("THERMOSTAT") > -1) {
 				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
 			}
 			else if (device.displayCategories.indexOf("SMARTPLUG") > -1) {
 				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
 			}
 			else if (device.displayCategories.indexOf("SMARTLOCK") > -1) {
 				enableDevTypeStateReport = true;
-				sendGoogleStateUpdate = true;
 			}
 			else {
 				// Unless device type specifically defined above, state updates will NOT be sent
