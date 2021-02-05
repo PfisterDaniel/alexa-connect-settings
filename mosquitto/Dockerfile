@@ -1,7 +1,7 @@
 FROM alpine:3.11
 
-LABEL maintainer="David Staeheli <david@hosa.ch>" \
-    description="Eclipse Mosquitto MQTT Broker"
+LABEL maintainer="Daniel Pfister <support@alexa-connect.de>" \
+    description="Mosquitto MQTT Broker with auth-plugin"
 
 ENV VERSION=1.6.9 \
     DOWNLOAD_SHA256=412979b2db0a0020bd02fa64f0a0de9e7000b84462586e32b67f29bb1f6c1685 \
